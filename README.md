@@ -1,2 +1,2 @@
-# redisx
-redis扩展
+# interactx
+命令行互动工具
