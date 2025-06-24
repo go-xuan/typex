@@ -1,2 +1,2 @@
-# interactx
-命令行互动工具
+# typex
+类型封装
