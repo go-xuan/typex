@@ -21,7 +21,7 @@ type Bool struct {
 func (x *Bool) UnmarshalJSON(bytes []byte) error {
 	if value := string(bytes); value != "" && value != "null" {
 		x.notnull = true
-		x.value = BoolOf(value)
+		x.value = boolOf(value)
 		return nil
 	}
 	x.notnull = false
@@ -92,7 +92,7 @@ func (x *Bool) Bool(def ...bool) bool {
 	return false
 }
 
-func BoolOf(s string) bool {
+func boolOf(s string) bool {
 	s = strings.ToLower(s)
 	for _, item := range []string{"1", "true", "是", "yes"} {
 		if s == item {

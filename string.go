@@ -95,7 +95,7 @@ func (x *String) Float64(def ...float64) float64 {
 
 func (x *String) Bool(def ...bool) bool {
 	if x.Valid() {
-		return BoolOf(x.value)
+		return boolOf(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}
