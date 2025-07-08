@@ -99,3 +99,25 @@ func (e *Enum[KT, VT]) Values() []VT {
 	}
 	return values
 }
+
+// Range 遍历枚举值
+func (e *Enum[KT, VT]) Range(do func(k KT, v VT) bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	for _, key := range e.keys {
+		if do(key, e.data[key]) {
+			return
+		}
+	}
+}
+
+// RangeWithIndex 遍历枚举值
+func (e *Enum[KT, VT]) RangeWithIndex(do func(i int, k KT, v VT) bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	for i, key := range e.keys {
+		if do(i, key, e.data[key]) {
+			return
+		}
+	}
+}

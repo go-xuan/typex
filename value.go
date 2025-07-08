@@ -32,23 +32,38 @@ func (z *Zero) Valid() bool {
 	return false
 }
 
-func (z *Zero) String(...string) string {
+func (z *Zero) String(def ...string) string {
+	if len(def) > 0 {
+		return def[0]
+	}
 	return ""
 }
 
-func (z *Zero) Int(...int) int {
+func (z *Zero) Int(def ...int) int {
+	if len(def) > 0 {
+		return def[0]
+	}
 	return 0
 }
 
-func (z *Zero) Int64(...int64) int64 {
+func (z *Zero) Int64(def ...int64) int64 {
+	if len(def) > 0 {
+		return def[0]
+	}
 	return 0
 }
 
-func (z *Zero) Float64(...float64) float64 {
+func (z *Zero) Float64(def ...float64) float64 {
+	if len(def) > 0 {
+		return def[0]
+	}
 	return 0
 }
 
-func (z *Zero) Bool(...bool) bool {
+func (z *Zero) Bool(def ...bool) bool {
+	if len(def) > 0 {
+		return def[0]
+	}
 	return false
 }
 
