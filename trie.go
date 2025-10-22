@@ -4,20 +4,6 @@ import (
 	"strings"
 )
 
-// Trie Trie树
-type Trie struct {
-	root    *TrieNode      // 树根
-	mask    string         // 掩码
-	weights map[string]int // 权重
-}
-
-// TrieNode Trie树节点
-type TrieNode struct {
-	children map[string]*TrieNode // 子节点
-	end      bool                 // 是否是单词词尾
-	terminal bool                 // 是否是分支末端
-}
-
 // NewTrie 创建前缀树
 func NewTrie() *Trie {
 	return &Trie{
@@ -27,12 +13,26 @@ func NewTrie() *Trie {
 	}
 }
 
-func newTrieNode() *TrieNode {
-	return &TrieNode{
-		children: make(map[string]*TrieNode),
+func newTrieNode() *trieNode {
+	return &trieNode{
+		children: make(map[string]*trieNode),
 		end:      false,
 		terminal: true,
 	}
+}
+
+// trieNode Trie树节点
+type trieNode struct {
+	children map[string]*trieNode // 子节点
+	end      bool                 // 是否是单词词尾
+	terminal bool                 // 是否是分支末端
+}
+
+// Trie Trie树
+type Trie struct {
+	root    *trieNode      // 树根
+	mask    string         // 掩码
+	weights map[string]int // 权重
 }
 
 // AddMap 添加
@@ -79,7 +79,7 @@ func (t *Trie) Update(word string, weight int) {
 func (t *Trie) Mask(sentence string) string {
 	var sb = strings.Builder{}
 	var node, start = t.root, 0
-	var temp *TrieNode
+	var temp *trieNode
 	words := strings.Split(sentence, "")
 	for i, item := range strings.Split(sentence, "") {
 		if child, ok := node.children[item]; ok {
@@ -115,7 +115,7 @@ func (t *Trie) Check(sentence string) (bool, int) {
 	var exist, weight = false, 0
 	var node, start = t.root, 0
 	var sb = strings.Builder{}
-	var temp *TrieNode
+	var temp *trieNode
 	words := strings.Split(sentence, "")
 	for i, word := range words {
 		if child, ok := node.children[word]; ok {

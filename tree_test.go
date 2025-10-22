@@ -50,5 +50,17 @@ func TestTree(t *testing.T) {
 	}
 
 	tree := Convert2Tree(list, "0")
-	fmt.Println(tree)
+
+	for _, node := range tree {
+		printNode("", node)
+	}
+}
+
+func printNode[T any](s string, node *TreeNode[T]) {
+	fmt.Println(s + node.Id)
+	if node.Child != nil && len(node.Child) > 0 {
+		for _, child := range node.Child {
+			printNode(s+"  ", child)
+		}
+	}
 }

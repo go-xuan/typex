@@ -1,22 +1,22 @@
 package typex
 
 // Convert2Tree 平铺数组转为树形结构
-func Convert2Tree[T Node](list []T, root string) Tree[T] {
+func Convert2Tree[N Node](list []N, root string) []*TreeNode[N] {
 	if len(list) == 0 {
 		return nil
 	}
-	data := make(map[string]Tree[T])
+	data := make(map[string][]*TreeNode[N])
 	for _, item := range list {
 		id, pid := item.ID(), item.PID()
-		data[pid] = append(data[pid], &TreeNode[T]{
+		data[pid] = append(data[pid], &TreeNode[N]{
 			Id:   id,
 			Pid:  pid,
 			Data: item,
 		})
 	}
-	if result, ok := data[root]; ok {
-		result = result.buildChild(data)
-		return result
+	if tree, ok := data[root]; ok {
+		tree = buildChild(tree, data)
+		return tree
 	}
 	return nil
 }
@@ -28,29 +28,26 @@ type Node interface {
 
 // TreeNode 树形节点
 type TreeNode[T any] struct {
-	Id    string  `json:"id"`
-	Pid   string  `json:"pid"`
-	Data  T       `json:"data"`
-	Child Tree[T] `json:"child"`
+	Id    string         `json:"id"`
+	Pid   string         `json:"pid"`
+	Data  T              `json:"data"`
+	Child []*TreeNode[T] `json:"child"`
 }
 
-// Tree 树形结构
-type Tree[T any] []*TreeNode[T]
-
 // buildChild 构建子节点
-func (t Tree[T]) buildChild(data map[string]Tree[T]) Tree[T] {
-	var tree Tree[T]
-	if t != nil && len(t) > 0 {
-		for _, item := range t {
-			var child = data[item.Id]
-			child = child.buildChild(data)
-			tree = append(tree, &TreeNode[T]{
-				Id:    item.Id,
-				Pid:   item.Pid,
-				Data:  item.Data,
-				Child: child,
+func buildChild[T any](nodes []*TreeNode[T], groups map[string][]*TreeNode[T]) []*TreeNode[T] {
+	var list []*TreeNode[T]
+	if nodes != nil && len(nodes) > 0 {
+		for _, node := range nodes {
+			var group = groups[node.Id]
+			group = buildChild(group, groups)
+			list = append(list, &TreeNode[T]{
+				Id:    node.Id,
+				Pid:   node.Pid,
+				Data:  node.Data,
+				Child: group,
 			})
 		}
 	}
-	return tree
+	return list
 }
