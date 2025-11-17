@@ -4,6 +4,7 @@ import (
 	"strconv"
 )
 
+// NewInt64 创建整数值
 func NewInt64(v ...int64) *Int64 {
 	var x = &Int64{notnull: true}
 	if len(v) > 0 {
@@ -14,6 +15,7 @@ func NewInt64(v ...int64) *Int64 {
 	return x
 }
 
+// Int64 整数值
 type Int64 struct {
 	value   int64
 	notnull bool

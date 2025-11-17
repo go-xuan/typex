@@ -11,11 +11,11 @@ type Demo struct {
 	Name string
 }
 
-func (d Demo) ID() string {
+func (d Demo) GetID() string {
 	return d.Id
 }
 
-func (d Demo) PID() string {
+func (d Demo) GetPID() string {
 	return d.Pid
 }
 

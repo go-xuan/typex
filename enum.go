@@ -19,29 +19,30 @@ func NewIntEnum[T any]() *Enum[int, T] {
 }
 
 // NewEnum key为comparable类型，value为任意类型
-func NewEnum[KT comparable, VT any]() *Enum[KT, VT] {
-	return &Enum[KT, VT]{
-		keys: make([]KT, 0),
-		data: make(map[KT]VT),
+func NewEnum[K comparable, V any]() *Enum[K, V] {
+	return &Enum[K, V]{
+		keys: make([]K, 0),
+		data: make(map[K]V),
 	}
 }
 
-type Enum[KT comparable, VT any] struct {
+// Enum 枚举类
+type Enum[K comparable, V any] struct {
 	mu   sync.RWMutex // 读写锁
-	keys []KT         // 保证有序
-	data map[KT]VT    // 存储枚举值
+	keys []K          // 保证有序
+	data map[K]V      // 存储枚举值
 }
 
-func (e *Enum[KT, VT]) Len() int {
+func (e *Enum[K, V]) Len() int {
 	return len(e.keys)
 }
 
-func (e *Enum[KT, VT]) Clear() {
-	e.keys = make([]KT, 0)
-	e.data = make(map[KT]VT)
+func (e *Enum[K, V]) Clear() {
+	e.keys = make([]K, 0)
+	e.data = make(map[K]V)
 }
 
-func (e *Enum[KT, VT]) Remove(k KT) {
+func (e *Enum[K, V]) Remove(k K) {
 	if len(e.keys) == 0 {
 		return
 	}
@@ -58,20 +59,20 @@ func (e *Enum[KT, VT]) Remove(k KT) {
 	e.keys = e.keys[:i]
 }
 
-func (e *Enum[KT, VT]) Get(k KT) VT {
+func (e *Enum[K, V]) Get(k K) V {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	return e.data[k]
 }
 
-func (e *Enum[KT, VT]) Exist(k KT) bool {
+func (e *Enum[K, V]) Exist(k K) bool {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	_, ok := e.data[k]
 	return ok
 }
 
-func (e *Enum[KT, VT]) Add(k KT, v VT) *Enum[KT, VT] {
+func (e *Enum[K, V]) Add(k K, v V) *Enum[K, V] {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	if _, ok := e.data[k]; !ok {
@@ -81,30 +82,30 @@ func (e *Enum[KT, VT]) Add(k KT, v VT) *Enum[KT, VT] {
 	return e
 }
 
-func (e *Enum[KT, VT]) Keys() []KT {
+// Keys 返回枚举值的键列表
+func (e *Enum[K, V]) Keys() []K {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 	// 返回切片的副本，避免外部修改内部数据
-	keysCopy := make([]KT, len(e.keys))
-	copy(keysCopy, e.keys)
-	return keysCopy
+	ks := make([]K, len(e.keys))
+	copy(ks, e.keys)
+	return ks
 }
 
-func (e *Enum[KT, VT]) Values() []VT {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	var values []VT
-	for _, key := range e.keys {
+// Values 返回枚举值的值列表
+func (e *Enum[K, V]) Values() []V {
+	keys := e.Keys()
+	var values []V
+	for _, key := range keys {
 		values = append(values, e.data[key])
 	}
 	return values
 }
 
 // Range 遍历枚举值
-func (e *Enum[KT, VT]) Range(fn func(k KT, v VT) bool) {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	for _, key := range e.keys {
+func (e *Enum[K, V]) Range(fn func(k K, v V) bool) {
+	keys := e.Keys()
+	for _, key := range keys {
 		if fn(key, e.data[key]) {
 			break
 		}
@@ -113,10 +114,9 @@ func (e *Enum[KT, VT]) Range(fn func(k KT, v VT) bool) {
 }
 
 // RangeWithIndex 遍历枚举值
-func (e *Enum[KT, VT]) RangeWithIndex(fn func(i int, k KT, v VT) bool) {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	for i, key := range e.keys {
+func (e *Enum[K, V]) RangeWithIndex(fn func(i int, k K, v V) bool) {
+	keys := e.Keys()
+	for i, key := range keys {
 		if fn(i, key, e.data[key]) {
 			break
 		}

@@ -1,91 +1,29 @@
 package typex
 
-type Value interface {
-	Valid() bool
-	String(def ...string) string
-	Int(def ...int) int
-	Int64(def ...int64) int64
-	Float64(def ...float64) float64
-	Bool(def ...bool) bool
-}
-
+// NewValue 创建任意值
 func NewValue(v any) Value {
 	switch value := v.(type) {
 	case int:
-		return IntValue(value)
+		return NewInt(value)
 	case int64:
-		return Int64Value(value)
+		return NewInt64(value)
 	case float64:
-		return Float64Value(value)
+		return NewFloat64(value)
 	case bool:
-		return BoolValue(value)
+		return NewBool(value)
 	case string:
-		return StringValue(value)
+		return NewString(value)
 	default:
-		return ZeroValue()
+		return NewZero()
 	}
 }
 
-type Zero struct{}
-
-func (z *Zero) Valid() bool {
-	return false
-}
-
-func (z *Zero) String(def ...string) string {
-	if len(def) > 0 {
-		return def[0]
-	}
-	return ""
-}
-
-func (z *Zero) Int(def ...int) int {
-	if len(def) > 0 {
-		return def[0]
-	}
-	return 0
-}
-
-func (z *Zero) Int64(def ...int64) int64 {
-	if len(def) > 0 {
-		return def[0]
-	}
-	return 0
-}
-
-func (z *Zero) Float64(def ...float64) float64 {
-	if len(def) > 0 {
-		return def[0]
-	}
-	return 0
-}
-
-func (z *Zero) Bool(def ...bool) bool {
-	if len(def) > 0 {
-		return def[0]
-	}
-	return false
-}
-
-func ZeroValue() Value {
-	return &Zero{}
-}
-func StringValue(v string) Value {
-	return NewString(v)
-}
-
-func Int64Value(v int64) Value {
-	return NewInt64(v)
-}
-
-func IntValue(v int) Value {
-	return NewInt(v)
-}
-
-func Float64Value(v float64) Value {
-	return NewFloat64(v)
-}
-
-func BoolValue(v bool) Value {
-	return NewBool(v)
+// Value 任意值
+type Value interface {
+	Valid() bool                    // 是否有效
+	String(def ...string) string    // 转为字符串，若无效则返回默认值
+	Int(def ...int) int             // 转为整数，若无效则返回默认值
+	Int64(def ...int64) int64       // 转为整数，若无效则返回默认值
+	Float64(def ...float64) float64 // 转为浮点数，若无效则返回默认值
+	Bool(def ...bool) bool          // 转为布尔值，若无效则返回默认值
 }

@@ -2,6 +2,7 @@ package typex
 
 import "strconv"
 
+// NewInt 创建整数值
 func NewInt(v ...int) *Int {
 	var x = &Int{notnull: true}
 	if len(v) > 0 {
@@ -12,6 +13,7 @@ func NewInt(v ...int) *Int {
 	return x
 }
 
+// Int 整数值
 type Int struct {
 	value   int
 	notnull bool

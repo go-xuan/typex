@@ -4,6 +4,7 @@ import (
 	"strconv"
 )
 
+// NewString 创建字符串值
 func NewString(v ...string) *String {
 	var x = &String{notnull: true}
 	if len(v) > 0 {
@@ -14,6 +15,7 @@ func NewString(v ...string) *String {
 	return x
 }
 
+// String 字符串值
 type String struct {
 	value   string
 	notnull bool

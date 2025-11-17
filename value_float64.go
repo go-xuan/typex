@@ -4,6 +4,7 @@ import (
 	"strconv"
 )
 
+// NewFloat64 创建浮点数值
 func NewFloat64(t ...float64) *Float64 {
 	var x = &Float64{notnull: true}
 	if len(t) > 0 {
@@ -14,6 +15,7 @@ func NewFloat64(t ...float64) *Float64 {
 	return x
 }
 
+// Float64 浮点数值
 type Float64 struct {
 	value   float64
 	notnull bool

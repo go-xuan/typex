@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// NewBool 创建布尔值
 func NewBool(v ...bool) *Bool {
 	var x = &Bool{notnull: true}
 	if len(v) > 0 && v[0] {
@@ -13,6 +14,7 @@ func NewBool(v ...bool) *Bool {
 	return x
 }
 
+// Bool 布尔值
 type Bool struct {
 	value   bool
 	notnull bool

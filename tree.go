@@ -7,7 +7,7 @@ func Convert2Tree[N Node](list []N, root string) []*TreeNode[N] {
 	}
 	data := make(map[string][]*TreeNode[N])
 	for _, item := range list {
-		id, pid := item.ID(), item.PID()
+		id, pid := item.GetID(), item.GetPID()
 		data[pid] = append(data[pid], &TreeNode[N]{
 			Id:   id,
 			Pid:  pid,
@@ -22,8 +22,8 @@ func Convert2Tree[N Node](list []N, root string) []*TreeNode[N] {
 }
 
 type Node interface {
-	ID() string
-	PID() string
+	GetID() string
+	GetPID() string
 }
 
 // TreeNode 树形节点
