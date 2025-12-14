@@ -5,22 +5,22 @@ import (
 	"testing"
 )
 
-type Demo struct {
+type nodeDemo struct {
 	Id   string
 	Pid  string
 	Name string
 }
 
-func (d Demo) GetID() string {
+func (d nodeDemo) GetID() string {
 	return d.Id
 }
 
-func (d Demo) GetPID() string {
+func (d nodeDemo) GetPID() string {
 	return d.Pid
 }
 
 func TestTree(t *testing.T) {
-	var list = []Demo{
+	var list = []nodeDemo{
 		{Id: "1", Pid: "0", Name: "1"},
 		{Id: "2", Pid: "0", Name: "2"},
 		{Id: "3", Pid: "0", Name: "3"},

@@ -21,28 +21,9 @@ type String struct {
 	notnull bool
 }
 
-func (x *String) UnmarshalJSON(bytes []byte) error {
-	if l := len(bytes); l >= 0 && string(bytes) != "null" {
-		if l > 1 && bytes[0] == 34 && bytes[l-1] == 34 {
-			bytes = bytes[1 : l-1] // 带引号则去掉引号
-		}
-		x.notnull = true
-		x.value = string(bytes)
-		return nil
-	}
-	x.notnull = false
-	return nil
-}
-
-func (x *String) MarshalJSON() ([]byte, error) {
-	if x.Valid() {
-		var bytes []byte
-		bytes = append(bytes, 34)
-		bytes = append(bytes, []byte(x.value)...)
-		bytes = append(bytes, 34)
-		return bytes, nil
-	}
-	return []byte("null"), nil
+func (x *String) Cover(v any) {
+	x.value = NewValue(v).String()
+	return
 }
 
 func (x *String) Value(def ...string) string {
@@ -102,4 +83,29 @@ func (x *String) Bool(def ...bool) bool {
 		return def[0]
 	}
 	return false
+}
+
+func (x *String) UnmarshalJSON(bytes []byte) error {
+	if l := len(bytes); l >= 0 && string(bytes) != "null" {
+		// 带引号则去掉引号
+		if l > 1 && bytes[0] == 34 && bytes[l-1] == 34 {
+			bytes = bytes[1 : l-1]
+		}
+		x.notnull = true
+		x.value = string(bytes)
+		return nil
+	}
+	x.notnull = false
+	return nil
+}
+
+func (x *String) MarshalJSON() ([]byte, error) {
+	if x.Valid() {
+		var bytes []byte
+		bytes = append(bytes, 34)
+		bytes = append(bytes, []byte(x.value)...)
+		bytes = append(bytes, 34)
+		return bytes, nil
+	}
+	return []byte("null"), nil
 }

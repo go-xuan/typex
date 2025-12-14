@@ -13,6 +13,12 @@ func NewValue(v any) Value {
 		return NewBool(value)
 	case string:
 		return NewString(value)
+	case []byte:
+		return NewString(string(value))
+	case error:
+		return NewString(value.Error())
+	case Value:
+		return value
 	default:
 		return NewZero()
 	}
@@ -21,9 +27,12 @@ func NewValue(v any) Value {
 // Value 任意值
 type Value interface {
 	Valid() bool                    // 是否有效
+	Cover(v any)                    // 覆盖值
 	String(def ...string) string    // 转为字符串，若无效则返回默认值
 	Int(def ...int) int             // 转为整数，若无效则返回默认值
 	Int64(def ...int64) int64       // 转为整数，若无效则返回默认值
 	Float64(def ...float64) float64 // 转为浮点数，若无效则返回默认值
 	Bool(def ...bool) bool          // 转为布尔值，若无效则返回默认值
+	MarshalJSON() ([]byte, error)   // 序列化为json
+	UnmarshalJSON([]byte) error     // 从json反序列化
 }

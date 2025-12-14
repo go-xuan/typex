@@ -21,23 +21,9 @@ type Int64 struct {
 	notnull bool
 }
 
-func (x *Int64) UnmarshalJSON(bytes []byte) error {
-	if str := string(bytes); str != "" && str != "null" {
-		if value, err := strconv.ParseInt(string(bytes), 10, 64); err == nil {
-			x.value = value
-			x.notnull = true
-			return nil
-		}
-	}
-	x.notnull = false
-	return nil
-}
-
-func (x *Int64) MarshalJSON() ([]byte, error) {
-	if x.Valid() {
-		return []byte(strconv.FormatInt(x.value, 10)), nil
-	}
-	return []byte("null"), nil
+func (x *Int64) Cover(v any) {
+	x.value = NewValue(v).Int64()
+	return
 }
 
 func (x *Int64) Value(def ...int64) int64 {
@@ -91,4 +77,23 @@ func (x *Int64) Bool(def ...bool) bool {
 		return def[0]
 	}
 	return false
+}
+
+func (x *Int64) UnmarshalJSON(bytes []byte) error {
+	if str := string(bytes); str != "" && str != "null" {
+		if value, err := strconv.ParseInt(str, 10, 64); err == nil {
+			x.value = value
+			x.notnull = true
+			return nil
+		}
+	}
+	x.notnull = false
+	return nil
+}
+
+func (x *Int64) MarshalJSON() ([]byte, error) {
+	if x.Valid() {
+		return []byte(strconv.FormatInt(x.value, 10)), nil
+	}
+	return []byte("null"), nil
 }

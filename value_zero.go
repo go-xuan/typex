@@ -8,6 +8,8 @@ func NewZero() *Zero {
 // Zero 零值
 type Zero struct{}
 
+func (z *Zero) Cover(_ any) {}
+
 func (z *Zero) Valid() bool {
 	return false
 }
@@ -30,4 +32,12 @@ func (z *Zero) Float64(...float64) float64 {
 
 func (z *Zero) Bool(...bool) bool {
 	return false
+}
+
+func (z *Zero) UnmarshalJSON(_ []byte) error {
+	return nil
+}
+
+func (z *Zero) MarshalJSON() ([]byte, error) {
+	return []byte("null"), nil
 }

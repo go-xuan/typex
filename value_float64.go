@@ -21,24 +21,9 @@ type Float64 struct {
 	notnull bool
 }
 
-func (x *Float64) UnmarshalJSON(bytes []byte) error {
-	if str := string(bytes); str != "" && str != "null" {
-		if value, err := strconv.ParseFloat(str, 64); err == nil {
-			x.value = value
-			x.notnull = true
-			return nil
-		}
-	}
-	x.notnull = false
-	return nil
-}
-
-func (x *Float64) MarshalJSON() ([]byte, error) {
-	if x.Valid() {
-		return []byte(strconv.FormatFloat(x.value, 'f', -1, 64)), nil
-	} else {
-		return []byte("null"), nil
-	}
+func (x *Float64) Cover(v any) {
+	x.value = NewValue(v).Float64()
+	return
 }
 
 func (x *Float64) Value(def ...float64) float64 {
@@ -92,4 +77,23 @@ func (x *Float64) Bool(def ...bool) bool {
 		return def[0]
 	}
 	return false
+}
+
+func (x *Float64) UnmarshalJSON(bytes []byte) error {
+	if str := string(bytes); str != "" && str != "null" {
+		if value, err := strconv.ParseFloat(str, 64); err == nil {
+			x.value = value
+			x.notnull = true
+			return nil
+		}
+	}
+	x.notnull = false
+	return nil
+}
+
+func (x *Float64) MarshalJSON() ([]byte, error) {
+	if x.Valid() {
+		return []byte(strconv.FormatFloat(x.value, 'f', -1, 64)), nil
+	}
+	return []byte("null"), nil
 }

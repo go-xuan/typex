@@ -15,6 +15,7 @@ func NewLink[T any](value T) *Link[T] {
 	}
 }
 
+// 链表节点
 type linkNode[T any] struct {
 	value T            // 节点数据
 	prev  *linkNode[T] // 指向上一个节点

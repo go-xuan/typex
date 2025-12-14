@@ -1,7 +1,13 @@
 package typex
 
+// 树节点接口
+type treeNode interface {
+	GetID() string
+	GetPID() string
+}
+
 // Convert2Tree 平铺数组转为树形结构
-func Convert2Tree[N Node](list []N, root string) []*TreeNode[N] {
+func Convert2Tree[N treeNode](list []N, root string) []*TreeNode[N] {
 	if len(list) == 0 {
 		return nil
 	}
@@ -19,11 +25,6 @@ func Convert2Tree[N Node](list []N, root string) []*TreeNode[N] {
 		return tree
 	}
 	return nil
-}
-
-type Node interface {
-	GetID() string
-	GetPID() string
 }
 
 // TreeNode 树形节点

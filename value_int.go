@@ -19,23 +19,9 @@ type Int struct {
 	notnull bool
 }
 
-func (x *Int) UnmarshalJSON(bytes []byte) error {
-	if str := string(bytes); str != "" && str != "null" {
-		if value, err := strconv.Atoi(str); err == nil {
-			x.value = value
-			x.notnull = true
-			return nil
-		}
-	}
-	x.notnull = false
-	return nil
-}
-
-func (x *Int) MarshalJSON() ([]byte, error) {
-	if x.Valid() {
-		return []byte(strconv.Itoa(x.value)), nil
-	}
-	return []byte("null"), nil
+func (x *Int) Cover(v any) {
+	x.value = NewValue(v).Int()
+	return
 }
 
 func (x *Int) Value(def ...int) int {
@@ -89,4 +75,23 @@ func (x *Int) Bool(def ...bool) bool {
 		return def[0]
 	}
 	return false
+}
+
+func (x *Int) UnmarshalJSON(bytes []byte) error {
+	if str := string(bytes); str != "" && str != "null" {
+		if value, err := strconv.Atoi(str); err == nil {
+			x.value = value
+			x.notnull = true
+			return nil
+		}
+	}
+	x.notnull = false
+	return nil
+}
+
+func (x *Int) MarshalJSON() ([]byte, error) {
+	if x.Valid() {
+		return []byte(strconv.Itoa(x.value)), nil
+	}
+	return []byte("null"), nil
 }
