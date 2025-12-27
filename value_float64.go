@@ -5,14 +5,26 @@ import (
 )
 
 // NewFloat64 创建浮点数值
-func NewFloat64(t ...float64) *Float64 {
-	var x = &Float64{notnull: true}
-	if len(t) > 0 {
-		x.value = t[0]
-	} else {
-		x.value = 0
+func NewFloat64(f ...float64) *Float64 {
+	var value float64
+	if len(f) > 0 {
+		value = f[0]
 	}
-	return x
+	return &Float64{
+		value:   value,
+		notnull: true,
+	}
+}
+
+// String2Float64 将字符串解析为浮点数值
+func String2Float64(s string) float64 {
+	f, _ := strconv.ParseFloat(s, 64)
+	return f
+}
+
+// Float642String 将浮点数值格式化为字符串
+func Float642String(f float64) string {
+	return strconv.FormatFloat(f, 'f', -1, 64)
 }
 
 // Float64 浮点数值
@@ -22,8 +34,18 @@ type Float64 struct {
 }
 
 func (x *Float64) Cover(v any) {
-	x.value = NewValue(v).Float64()
-	return
+	switch value := v.(type) {
+	case float64:
+		x.value = value
+	case float32:
+		x.value = float64(value)
+	case string:
+		x.value = String2Float64(value)
+	case Value:
+		x.value = value.Float64()
+	default:
+		x.value = String2Float64(Any2String(value))
+	}
 }
 
 func (x *Float64) Value(def ...float64) float64 {
@@ -36,7 +58,7 @@ func (x *Float64) Valid() bool {
 
 func (x *Float64) String(def ...string) string {
 	if x.Valid() {
-		return strconv.FormatFloat(x.value, 'f', -1, 64)
+		return Float642String(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -72,7 +94,7 @@ func (x *Float64) Float64(def ...float64) float64 {
 
 func (x *Float64) Bool(def ...bool) bool {
 	if x.Valid() {
-		return x.value == 1
+		return x.value != 0
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -93,7 +115,7 @@ func (x *Float64) UnmarshalJSON(bytes []byte) error {
 
 func (x *Float64) MarshalJSON() ([]byte, error) {
 	if x.Valid() {
-		return []byte(strconv.FormatFloat(x.value, 'f', -1, 64)), nil
+		return []byte(Float642String(x.value)), nil
 	}
 	return []byte("null"), nil
 }

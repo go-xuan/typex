@@ -1,9 +1,23 @@
 package typex
 
+import (
+	"fmt"
+	"strings"
+)
+
 // 树节点接口
 type treeNode interface {
 	GetID() string
 	GetPID() string
+}
+
+// TreeNode 树形节点
+type TreeNode[T any] struct {
+	Id       string         `json:"id"`
+	Pid      string         `json:"pid"`
+	Depth    int            `json:"depth"`
+	Data     T              `json:"data"`
+	Children []*TreeNode[T] `json:"children"`
 }
 
 // Convert2Tree 平铺数组转为树形结构
@@ -11,44 +25,46 @@ func Convert2Tree[N treeNode](list []N, root string) []*TreeNode[N] {
 	if len(list) == 0 {
 		return nil
 	}
-	data := make(map[string][]*TreeNode[N])
+	// 按照pid进行分组聚合
+	origin := make(map[string][]*TreeNode[N])
 	for _, item := range list {
 		id, pid := item.GetID(), item.GetPID()
-		data[pid] = append(data[pid], &TreeNode[N]{
+		origin[pid] = append(origin[pid], &TreeNode[N]{
 			Id:   id,
 			Pid:  pid,
 			Data: item,
 		})
 	}
-	if tree, ok := data[root]; ok {
-		tree = buildChild(tree, data)
-		return tree
+	children, ok := origin[root]
+	if !ok {
+		return nil
 	}
-	return nil
+	buildChildren(children, origin, 0)
+	return children
 }
 
-// TreeNode 树形节点
-type TreeNode[T any] struct {
-	Id    string         `json:"id"`
-	Pid   string         `json:"pid"`
-	Data  T              `json:"data"`
-	Child []*TreeNode[T] `json:"child"`
+// buildChildren 构建子节点
+func buildChildren[T any](children []*TreeNode[T], origin map[string][]*TreeNode[T], depth int) {
+	for _, child := range children {
+		child.Depth = depth
+		thisChildren := origin[child.Id]
+		buildChildren(thisChildren, origin, child.Depth+1)
+		child.Children = thisChildren
+	}
 }
 
-// buildChild 构建子节点
-func buildChild[T any](nodes []*TreeNode[T], groups map[string][]*TreeNode[T]) []*TreeNode[T] {
-	var list []*TreeNode[T]
-	if nodes != nil && len(nodes) > 0 {
-		for _, node := range nodes {
-			var group = groups[node.Id]
-			group = buildChild(group, groups)
-			list = append(list, &TreeNode[T]{
-				Id:    node.Id,
-				Pid:   node.Pid,
-				Data:  node.Data,
-				Child: group,
-			})
+// PrintTree 打印树形结构
+func PrintTree[T any](tree []*TreeNode[T], indent string) {
+	for _, node := range tree {
+		printNode(indent, node)
+	}
+}
+
+func printNode[T any](indent string, node *TreeNode[T]) {
+	fmt.Println(strings.Repeat(indent, node.Depth) + node.Id)
+	if node.Children != nil && len(node.Children) > 0 {
+		for _, child := range node.Children {
+			printNode(indent, child)
 		}
 	}
-	return list
 }

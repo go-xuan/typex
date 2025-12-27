@@ -1,5 +1,7 @@
 package typex
 
+import "time"
+
 // NewValue 创建任意值
 func NewValue(v any) Value {
 	switch value := v.(type) {
@@ -13,6 +15,8 @@ func NewValue(v any) Value {
 		return NewBool(value)
 	case string:
 		return NewString(value)
+	case time.Time:
+		return NewTime(value)
 	case []byte:
 		return NewString(string(value))
 	case error:
@@ -33,6 +37,4 @@ type Value interface {
 	Int64(def ...int64) int64       // 转为整数，若无效则返回默认值
 	Float64(def ...float64) float64 // 转为浮点数，若无效则返回默认值
 	Bool(def ...bool) bool          // 转为布尔值，若无效则返回默认值
-	MarshalJSON() ([]byte, error)   // 序列化为json
-	UnmarshalJSON([]byte) error     // 从json反序列化
 }

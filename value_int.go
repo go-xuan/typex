@@ -1,16 +1,30 @@
 package typex
 
-import "strconv"
+import (
+	"strconv"
+)
 
 // NewInt 创建整数值
 func NewInt(v ...int) *Int {
-	var x = &Int{notnull: true}
+	var value int
 	if len(v) > 0 {
-		x.value = v[0]
-	} else {
-		x.value = 0
+		value = v[0]
 	}
-	return x
+	return &Int{
+		value:   value,
+		notnull: true,
+	}
+}
+
+// String2Int 将字符串解析为整数值
+func String2Int(s string) int {
+	i, _ := strconv.Atoi(s)
+	return i
+}
+
+// Int2String 将整数值格式化为字符串
+func Int2String(i int) string {
+	return strconv.Itoa(i)
 }
 
 // Int 整数值
@@ -20,8 +34,18 @@ type Int struct {
 }
 
 func (x *Int) Cover(v any) {
-	x.value = NewValue(v).Int()
-	return
+	switch value := v.(type) {
+	case int:
+		x.value = value
+	case int64:
+		x.value = int(value)
+	case string:
+		x.value = String2Int(value)
+	case Value:
+		x.value = value.Int()
+	default:
+		x.value = String2Int(Any2String(value))
+	}
 }
 
 func (x *Int) Value(def ...int) int {
@@ -34,7 +58,7 @@ func (x *Int) Valid() bool {
 
 func (x *Int) String(def ...string) string {
 	if x.Valid() {
-		return strconv.Itoa(x.value)
+		return Int2String(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -70,7 +94,7 @@ func (x *Int) Float64(def ...float64) float64 {
 
 func (x *Int) Bool(def ...bool) bool {
 	if x.Valid() {
-		return x.value == 1
+		return x.value != 0
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -91,7 +115,7 @@ func (x *Int) UnmarshalJSON(bytes []byte) error {
 
 func (x *Int) MarshalJSON() ([]byte, error) {
 	if x.Valid() {
-		return []byte(strconv.Itoa(x.value)), nil
+		return []byte(Int2String(x.value)), nil
 	}
 	return []byte("null"), nil
 }

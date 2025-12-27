@@ -1,7 +1,6 @@
 package typex
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -27,17 +26,12 @@ func TestTree(t *testing.T) {
 		{Id: "11", Pid: "1", Name: "1-1"},
 		{Id: "12", Pid: "1", Name: "1-2"},
 		{Id: "13", Pid: "1", Name: "1-3"},
-		{Id: "14", Pid: "1", Name: "1-4"},
-		{Id: "15", Pid: "1", Name: "1-5"},
 		{Id: "21", Pid: "2", Name: "2-1"},
 		{Id: "22", Pid: "2", Name: "2-2"},
 		{Id: "23", Pid: "2", Name: "2-3"},
 		{Id: "31", Pid: "3", Name: "3-1"},
 		{Id: "32", Pid: "3", Name: "3-2"},
 		{Id: "33", Pid: "3", Name: "3-3"},
-		{Id: "34", Pid: "3", Name: "3-4"},
-		{Id: "35", Pid: "3", Name: "3-5"},
-		{Id: "36", Pid: "3", Name: "3-6"},
 		{Id: "111", Pid: "11", Name: "1-1-1"},
 		{Id: "112", Pid: "11", Name: "1-1-2"},
 		{Id: "113", Pid: "11", Name: "1-1-3"},
@@ -47,20 +41,12 @@ func TestTree(t *testing.T) {
 		{Id: "131", Pid: "13", Name: "1-3-1"},
 		{Id: "132", Pid: "13", Name: "1-3-2"},
 		{Id: "133", Pid: "13", Name: "1-3-3"},
+		{Id: "1111", Pid: "111", Name: "1-1-1-1"},
+		{Id: "1112", Pid: "111", Name: "1-1-1-2"},
+		{Id: "1121", Pid: "112", Name: "1-1-2-1"},
+		{Id: "1122", Pid: "112", Name: "1-1-2-2"},
 	}
-
 	tree := Convert2Tree(list, "0")
-
-	for _, node := range tree {
-		printNode("", node)
-	}
-}
-
-func printNode[T any](s string, node *TreeNode[T]) {
-	fmt.Println(s + node.Id)
-	if node.Child != nil && len(node.Child) > 0 {
-		for _, child := range node.Child {
-			printNode(s+"  ", child)
-		}
-	}
+	// 打印树形结构
+	PrintTree(tree, "#")
 }

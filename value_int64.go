@@ -6,13 +6,25 @@ import (
 
 // NewInt64 创建整数值
 func NewInt64(v ...int64) *Int64 {
-	var x = &Int64{notnull: true}
+	var value int64
 	if len(v) > 0 {
-		x.value = v[0]
-	} else {
-		x.value = 0
+		value = v[0]
 	}
-	return x
+	return &Int64{
+		value:   value,
+		notnull: true,
+	}
+}
+
+// String2Int64 将字符串解析为整数值
+func String2Int64(s string) int64 {
+	i, _ := strconv.ParseInt(s, 10, 64)
+	return i
+}
+
+// Int642String 将整数值格式化为字符串
+func Int642String(i int64) string {
+	return strconv.FormatInt(i, 10)
 }
 
 // Int64 整数值
@@ -22,8 +34,18 @@ type Int64 struct {
 }
 
 func (x *Int64) Cover(v any) {
-	x.value = NewValue(v).Int64()
-	return
+	switch value := v.(type) {
+	case int64:
+		x.value = value
+	case int:
+		x.value = int64(value)
+	case string:
+		x.value = String2Int64(value)
+	case Value:
+		x.value = value.Int64()
+	default:
+		x.value = String2Int64(Any2String(value))
+	}
 }
 
 func (x *Int64) Value(def ...int64) int64 {
@@ -36,7 +58,7 @@ func (x *Int64) Valid() bool {
 
 func (x *Int64) String(def ...string) string {
 	if x.Valid() {
-		return strconv.FormatInt(x.value, 10)
+		return Int642String(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -72,7 +94,7 @@ func (x *Int64) Float64(def ...float64) float64 {
 
 func (x *Int64) Bool(def ...bool) bool {
 	if x.Valid() {
-		return x.value == 1
+		return x.value != 0
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -93,7 +115,7 @@ func (x *Int64) UnmarshalJSON(bytes []byte) error {
 
 func (x *Int64) MarshalJSON() ([]byte, error) {
 	if x.Valid() {
-		return []byte(strconv.FormatInt(x.value, 10)), nil
+		return []byte(Int642String(x.value)), nil
 	}
 	return []byte("null"), nil
 }

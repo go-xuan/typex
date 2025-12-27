@@ -1,17 +1,32 @@
 package typex
 
-import (
-	"strconv"
-	"strings"
-)
-
 // NewBool 创建布尔值
 func NewBool(v ...bool) *Bool {
-	var x = &Bool{notnull: true}
-	if len(v) > 0 && v[0] {
-		x.value = true
+	var value bool
+	if len(v) > 0 {
+		value = v[0]
 	}
-	return x
+	return &Bool{
+		value:   value,
+		notnull: true,
+	}
+}
+
+// String2Bool 将字符串解析为布尔值
+func String2Bool(s string) bool {
+	switch s {
+	case "t", "T", "true", "TRUE", "True", "yes", "YES", "1", "是":
+		return true
+	}
+	return false
+}
+
+// Bool2String 将布尔值格式化为字符串
+func Bool2String(b bool) string {
+	if b {
+		return "true"
+	}
+	return "false"
 }
 
 // Bool 布尔值
@@ -25,8 +40,16 @@ func (x *Bool) Value(def ...bool) bool {
 }
 
 func (x *Bool) Cover(v any) {
-	x.value = NewValue(v).Bool()
-	return
+	switch value := v.(type) {
+	case bool:
+		x.value = value
+	case string:
+		x.value = String2Bool(value)
+	case Value:
+		x.value = value.Bool()
+	default:
+		x.value = String2Bool(Any2String(value))
+	}
 }
 
 func (x *Bool) Valid() bool {
@@ -35,7 +58,7 @@ func (x *Bool) Valid() bool {
 
 func (x *Bool) String(def ...string) string {
 	if x.Valid() {
-		return strconv.FormatBool(x.value)
+		return Bool2String(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -44,7 +67,9 @@ func (x *Bool) String(def ...string) string {
 
 func (x *Bool) Int(def ...int) int {
 	if x.Valid() {
-		return 1
+		if x.value {
+			return 1
+		}
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -53,7 +78,9 @@ func (x *Bool) Int(def ...int) int {
 
 func (x *Bool) Int64(def ...int64) int64 {
 	if x.Valid() {
-		return 1
+		if x.value {
+			return 1
+		}
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -62,7 +89,9 @@ func (x *Bool) Int64(def ...int64) int64 {
 
 func (x *Bool) Float64(def ...float64) float64 {
 	if x.Valid() {
-		return 1
+		if x.value {
+			return 1
+		}
 	} else if len(def) > 0 {
 		return def[0]
 	}
@@ -78,18 +107,10 @@ func (x *Bool) Bool(def ...bool) bool {
 	return false
 }
 
-func boolOf(s string) bool {
-	switch strings.ToLower(s) {
-	case "1", "true", "是", "yes":
-		return true
-	}
-	return false
-}
-
 func (x *Bool) UnmarshalJSON(bytes []byte) error {
-	if str := string(bytes); str != "" && str != "null" {
+	if value := string(bytes); value != "" && value != "null" {
 		x.notnull = true
-		x.value = boolOf(str)
+		x.value = String2Bool(value)
 		return nil
 	}
 	x.notnull = false

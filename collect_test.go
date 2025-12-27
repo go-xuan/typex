@@ -37,8 +37,8 @@ func TestArgsUnmarshal(t *testing.T) {
 func TestCollect(t *testing.T) {
 	var collect Collect[string, Value]
 
-	v1 := NewString("111")
-	v2 := NewString("222")
+	v1 := NewValue("111")
+	v2 := NewValue("222")
 
 	collect = Args{}
 	collect.Put("1", v1)

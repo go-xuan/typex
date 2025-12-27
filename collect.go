@@ -20,7 +20,7 @@ func ArgsRange(args Args, handle func(k string, v Value)) {
 	}
 }
 
-// Args 参数收集器，隐式实现了 Collect[string, Value]
+// Args 参数收集器，隐式实现了 CollectValue
 // 可被json序列化，但是不可被json反序列化，
 type Args map[string]Value
 
