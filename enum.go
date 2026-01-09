@@ -37,6 +37,14 @@ func (e *Enum[K, V]) Get(k K) V {
 	return e.data[k]
 }
 
+// Exist 判断枚举值是否存在
+func (e *Enum[K, V]) Exist(k K) (V, bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	v, ok := e.data[k]
+	return v, ok
+}
+
 // Add 添加枚举值
 func (e *Enum[K, V]) Add(k K, v V) *Enum[K, V] {
 	e.mu.Lock()
@@ -75,14 +83,6 @@ func (e *Enum[K, V]) Len() int {
 func (e *Enum[K, V]) Clear() {
 	e.keys = make([]K, 0)
 	e.data = make(map[K]V)
-}
-
-// Exist 判断枚举值是否存在
-func (e *Enum[K, V]) Exist(k K) bool {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	_, ok := e.data[k]
-	return ok
 }
 
 // Keys 返回枚举值的键列表
