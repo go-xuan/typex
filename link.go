@@ -49,7 +49,7 @@ func (list *Link[T]) GetTail() (T, bool) {
 	return list.tail.value, true
 }
 
-// Append 追加节点
+// Append 追加节点，每次追加一个节点
 func (list *Link[T]) Append(value T) *Link[T] {
 	list.mutex.Lock()
 	defer list.mutex.Unlock()
@@ -69,7 +69,7 @@ func (list *Link[T]) Append(value T) *Link[T] {
 	return list
 }
 
-// Remove 删除尾节点
+// Remove 删除尾节点，每次删除一个节点，若链表为空则不操作
 func (list *Link[T]) Remove() *Link[T] {
 	list.mutex.Lock()
 	defer list.mutex.Unlock()

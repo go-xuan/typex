@@ -8,7 +8,8 @@ import (
 func TestLinkedList(t *testing.T) {
 	list := NewLink(1).
 		Append(2).
-		Append(3)
+		Append(3).
+		Append(4)
 
 	fmt.Println(list.GetTail())
 

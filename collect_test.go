@@ -61,7 +61,7 @@ func TestCollect(t *testing.T) {
 	collect2.Put("2", v2)
 }
 
-// 打印器，Collect[string, any]
+// 打印器， Collect[string, any]
 type fmtPrint[V any] struct{}
 
 func (p fmtPrint[V]) Put(k string, v V) {
@@ -72,7 +72,7 @@ func (p fmtPrint[V]) Get(_ string) (v V) {
 	return
 }
 
-// 打印器，未使用范性，但是本质实现了 Collect[string, Value]
+// 打印器，虽然未使用范型，但是本质实现了 Collect[string, Value]
 type fmtPrint1 struct{}
 
 func (p fmtPrint1) Put(k string, v Value) {
@@ -83,7 +83,7 @@ func (p fmtPrint1) Get(_ string) (v Value) {
 	return
 }
 
-// 打印器，未使用范性，但是本质实现了 Collect[string, any]
+// 打印器，虽然未使用范型，但是本质实现了 Collect[string, any]
 type fmtPrint2 struct{}
 
 func (p fmtPrint2) Put(k string, v any) {
