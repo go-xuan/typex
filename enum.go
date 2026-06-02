@@ -32,15 +32,15 @@ func (e *Enum[K, V]) Put(k K, v V) {
 
 // Get 获取枚举值
 func (e *Enum[K, V]) Get(k K) V {
-	e.mu.Lock()
-	defer e.mu.Unlock()
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 	return e.data[k]
 }
 
 // Exist 判断枚举值是否存在
 func (e *Enum[K, V]) Exist(k K) (V, bool) {
-	e.mu.Lock()
-	defer e.mu.Unlock()
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 	v, ok := e.data[k]
 	return v, ok
 }
@@ -76,11 +76,15 @@ func (e *Enum[K, V]) Remove(k K) {
 
 // Len 返回枚举值数量
 func (e *Enum[K, V]) Len() int {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 	return len(e.keys)
 }
 
 // Clear 清空枚举值
 func (e *Enum[K, V]) Clear() {
+	e.mu.Lock()
+	defer e.mu.Unlock()
 	e.keys = make([]K, 0)
 	e.data = make(map[K]V)
 }
@@ -97,32 +101,46 @@ func (e *Enum[K, V]) Keys() []K {
 
 // Values 返回枚举值的值列表
 func (e *Enum[K, V]) Values() []V {
-	keys := e.Keys()
-	var values []V
-	for _, key := range keys {
-		values = append(values, e.data[key])
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	values := make([]V, len(e.keys))
+	for i, key := range e.keys {
+		values[i] = e.data[key]
 	}
 	return values
 }
 
 // Range 遍历枚举值
 func (e *Enum[K, V]) Range(handle func(k K, v V) bool) {
-	keys := e.Keys()
+	// 在锁内取快照，锁外执行 handle，避免 handle 回调 Enum 写方法时死锁
+	e.mu.RLock()
+	keys := make([]K, len(e.keys))
+	copy(keys, e.keys)
+	vals := make(map[K]V, len(e.data))
+	for k, v := range e.data {
+		vals[k] = v
+	}
+	e.mu.RUnlock()
 	for _, key := range keys {
-		if handle(key, e.data[key]) {
+		if handle(key, vals[key]) {
 			break
 		}
 	}
-	return
 }
 
 // RangeWithIndex 遍历枚举值，包含下标
 func (e *Enum[K, V]) RangeWithIndex(handle func(i int, k K, v V) bool) {
-	keys := e.Keys()
+	e.mu.RLock()
+	keys := make([]K, len(e.keys))
+	copy(keys, e.keys)
+	vals := make(map[K]V, len(e.data))
+	for k, v := range e.data {
+		vals[k] = v
+	}
+	e.mu.RUnlock()
 	for i, key := range keys {
-		if handle(i, key, e.data[key]) {
+		if handle(i, key, vals[key]) {
 			break
 		}
 	}
-	return
 }
