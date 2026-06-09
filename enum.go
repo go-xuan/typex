@@ -37,8 +37,8 @@ func (e *Enum[K, V]) Get(k K) V {
 	return e.data[k]
 }
 
-// Exist 判断枚举值是否存在
-func (e *Enum[K, V]) Exist(k K) (V, bool) {
+// Find 判断枚举值是否存在
+func (e *Enum[K, V]) Find(k K) (V, bool) {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 	v, ok := e.data[k]
@@ -110,7 +110,7 @@ func (e *Enum[K, V]) Values() []V {
 	return values
 }
 
-// Range 遍历枚举值
+// Range 遍历枚举值，handle 返回 false 停止遍历
 func (e *Enum[K, V]) Range(handle func(k K, v V) bool) {
 	// 在锁内取快照，锁外执行 handle，避免 handle 回调 Enum 写方法时死锁
 	e.mu.RLock()
@@ -122,7 +122,7 @@ func (e *Enum[K, V]) Range(handle func(k K, v V) bool) {
 	}
 	e.mu.RUnlock()
 	for _, key := range keys {
-		if handle(key, vals[key]) {
+		if !handle(key, vals[key]) {
 			break
 		}
 	}
@@ -139,7 +139,7 @@ func (e *Enum[K, V]) RangeWithIndex(handle func(i int, k K, v V) bool) {
 	}
 	e.mu.RUnlock()
 	for i, key := range keys {
-		if handle(i, key, vals[key]) {
+		if !handle(i, key, vals[key]) {
 			break
 		}
 	}

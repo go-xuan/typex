@@ -107,7 +107,7 @@ func (x *String) Bool(def ...bool) bool {
 }
 
 func (x *String) UnmarshalJSON(bytes []byte) error {
-	if l := len(bytes); l >= 0 && string(bytes) != "null" {
+	if l := len(bytes); l > 0 && string(bytes) != "null" {
 		// 带引号则去掉引号
 		if l > 1 && bytes[0] == 34 && bytes[l-1] == 34 {
 			bytes = bytes[1 : l-1]

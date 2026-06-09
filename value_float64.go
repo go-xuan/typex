@@ -76,7 +76,7 @@ func (x *Float64) Int(def ...int) int {
 
 func (x *Float64) Int64(def ...int64) int64 {
 	if x.Valid() {
-		return int64(int(x.value))
+		return int64(x.value)
 	} else if len(def) > 0 {
 		return def[0]
 	}

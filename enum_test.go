@@ -36,7 +36,7 @@ func TestEnum(t *testing.T) {
 	// 遍历枚举
 	ia.Range(func(k int, v any) bool {
 		fmt.Println(k, v)
-		return false
+		return true
 	})
 
 }
